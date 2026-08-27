@@ -1,0 +1,27 @@
+{% load static %}
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>{% block title %}Attendance Portal{% endblock %}</title>
+    <link rel="stylesheet" href="{% static 'css/site.css' %}">
+  </head>
+  <body>
+    <nav>
+      <a class="brand" href="{% url 'home' %}">Attendance Portal</a>
+      <div>
+        <a href="{% url 'register' %}">Register</a>
+        <a href="{% url 'student-search' %}">Mark attendance</a>
+      </div>
+    </nav>
+    <main>
+      {% if messages %}
+        {% for message in messages %}
+          <p class="message {{ message.tags }}">{{ message }}</p>
+        {% endfor %}
+      {% endif %}
+      {% block content %}{% endblock %}
+    </main>
+  </body>
+</html>

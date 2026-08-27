@@ -1,0 +1,15 @@
+{% extends "base.html" %}
+
+{% block title %}Register | Attendance Portal{% endblock %}
+
+{% block content %}
+  <section class="card">
+    <h1>Student registration</h1>
+    <p class="subtle">Create your student record before marking attendance.</p>
+    <form method="post">
+      {% csrf_token %}
+      {{ form.as_p }}
+      <button type="submit">Register</button>
+    </form>
+  </section>
+{% endblock %}
