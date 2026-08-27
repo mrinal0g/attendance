@@ -4,6 +4,7 @@ from django.contrib.auth import get_user_model
 from django.db import IntegrityError
 from django.shortcuts import get_object_or_404, redirect, render
 from django.utils import timezone
+from django.http import HttpResponseForbidden
 from django.views import View
 from .models import Attendance
 from .forms import AttendanceForm
@@ -17,6 +18,10 @@ class StudentAttendancePage(View):
         return get_object_or_404(User, username=username)
 
     def get(self, request, username):
+        if not request.user.is_authenticated:
+            return redirect("login")
+        if request.user.username != username:
+            return HttpResponseForbidden("You can only view your own attendance page.")
         student = self.get_student(username)
         return render(
             request,
@@ -30,7 +35,16 @@ class StudentAttendancePage(View):
         )
 
     def post(self, request, username):
-        student = self.get_student(username)
+        # 1. Standard Session Check
+        if not request.user.is_authenticated:
+            return redirect("login")
+            
+        # 2. Identity Check: Prevent marking attendance for someone else
+        if request.user.username != username:
+            return HttpResponseForbidden("You can only mark your own attendance.")
+
+        # 3. Pull the student directly from the verified session, not the URL
+        student = request.user
         form = AttendanceForm(request.POST)
         if form.is_valid():
             try:
