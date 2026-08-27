@@ -1,15 +1,14 @@
-{% extends "base.html" %}
-
-{% block title %}Attendance Portal{% endblock %}
-
-{% block content %}
-  <section class="hero">
-    <p class="eyebrow">Student attendance</p>
-    <h1>Record attendance simply.</h1>
-    <p>Register once, then find your username to record your attendance.</p>
-    <div class="actions">
-      <a class="button" href="{% url 'register' %}">Register</a>
-      <a class="button secondary" href="{% url 'student-search' %}">Mark attendance</a>
-    </div>
-  </section>
+{% extends "base.html" %} {% block title %}Attendance Portal{% endblock %} {%
+block content %}
+<section class="hero">
+  <p class="eyebrow">Student attendance</p>
+  <h1>Record attendance simply.</h1>
+  <p>Register once, then find your username to record your attendance.</p>
+  <div class="actions">
+    <a class="button" href="{% url 'register' %}">Register</a>
+    <a class="button secondary" href="{% url 'login' %}"
+      >Login to Mark Attendance</a
+    >
+  </div>
+</section>
 {% endblock %}

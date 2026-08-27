@@ -12,14 +12,12 @@
       <a class="brand" href="{% url 'home' %}">Attendance Portal</a>
       <div>
         {% if user.is_authenticated %}
-        <!-- Show this if the user is logged in -->
         <a
           href="{% url 'attendance:student-attendance' username=user.username %}"
           >My Attendance</a
         >
         <a href="{% url 'logout' %}">Logout</a>
         {% else %}
-        <!-- Show this if the user is NOT logged in -->
         <a href="{% url 'login' %}">Login</a>
         <a href="{% url 'register' %}">Register</a>
         {% endif %}
