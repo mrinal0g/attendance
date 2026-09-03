@@ -7,6 +7,9 @@
     <p class="eyebrow">Student found</p>
     <h1>{{ student.get_full_name|default:student.username }}</h1>
     <p class="subtle">@{{ student.username }}</p>
+    {% if student_record %}
+      <p class="subtle">Batch ID: {{ student_record.batch_id }}</p>
+    {% endif %}
     <p><strong>Attendance date:</strong> {{ today|date:"F j, Y" }}</p>
 
     <form method="post">

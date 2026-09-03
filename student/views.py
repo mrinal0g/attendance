@@ -7,10 +7,12 @@ from django.contrib.auth.models import User
 from rest_framework.permissions import IsAdminUser, IsAuthenticated, AllowAny
 from django.contrib import messages
 from django.contrib.auth import get_user_model
+from django.db import transaction
 from django.shortcuts import redirect, render
 from django.views import View
 
 from .forms import RegistrationForm
+from .models import StudentModel
 
 
 def home(request):
@@ -65,7 +67,15 @@ class RegisterPage(View):
     def post(self, request):
         form = RegistrationForm(request.POST)
         if form.is_valid():
-            form.save()
+            with transaction.atomic():
+                user = form.save()
+                StudentModel.objects.create(
+                    id=user.id,
+                    full_name=user.get_full_name(),
+                    email=user.email,
+                    phone=form.cleaned_data["phone"],
+                    batch_id=form.cleaned_data["batch_id"],
+                )
             messages.success(request, "Registration complete. Login with your account to mark your attendance.")
             return redirect("login")
         return render(request, "register.html", {"form": form})

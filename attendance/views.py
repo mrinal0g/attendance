@@ -8,6 +8,7 @@ from django.http import HttpResponseForbidden
 from django.views import View
 from .models import Attendance
 from .forms import AttendanceForm
+from student.models import StudentModel
 
 
 class StudentAttendancePage(View):
@@ -23,11 +24,13 @@ class StudentAttendancePage(View):
         if request.user.username != username:
             return HttpResponseForbidden("You can only view your own attendance page.")
         student = self.get_student(username)
+        student_record = StudentModel.objects.filter(id=student.id).first()
         return render(
             request,
             self.template_name,
             {
                 "student": student,
+                "student_record": student_record,
                 "form": AttendanceForm(),
                 "today": timezone.localdate(),
                 "history": Attendance.objects.filter(student=student),
@@ -45,6 +48,7 @@ class StudentAttendancePage(View):
 
         # 3. Pull the student directly from the verified session, not the URL
         student = request.user
+        student_record = StudentModel.objects.filter(id=student.id).first()
         form = AttendanceForm(request.POST)
         if form.is_valid():
             try:
@@ -64,6 +68,7 @@ class StudentAttendancePage(View):
             self.template_name,
             {
                 "student": student,
+                "student_record": student_record,
                 "form": form,
                 "today": timezone.localdate(),
                 "history": Attendance.objects.filter(student=student),
