@@ -1,7 +1,5 @@
-a = {"happy":"😀"}
-b = "I am happy Happy is me"
-b = b.lower()
-for word in b.lower().split():
-    if word in a:
-        b = b.replace(word, a[word])
-print(b)
+import socket
+
+hostname = socket.gethostname()
+local_ip = socket.gethostbyname(hostname)
+print(f"Local IP: {local_ip}")

@@ -6,6 +6,7 @@ from django.utils.encoding import iri_to_uri
 import csv
 
 from .models import Attendance
+from student.models import StudentModel
 
 
 @admin.register(Attendance)
@@ -37,11 +38,19 @@ class AttendanceAdmin(admin.ModelAdmin):
     def export_csv(self, request):
         """Export registered students as rows and recorded attendance dates as columns."""
         User = get_user_model()
+        batch_id = request.GET.get("batch_id", "").strip()
+        student_ids = None
+        if batch_id:
+            student_ids = StudentModel.objects.filter(batch_id=batch_id).values("id")
+        student_queryset = User.objects.filter(is_staff=False)
+        records_queryset = Attendance.objects.all()
+        if student_ids is not None:
+            student_queryset = student_queryset.filter(id__in=student_ids)
+            records_queryset = records_queryset.filter(student_id__in=student_ids)
         students = list(
-            User.objects.filter(is_staff=False)
-            .order_by("first_name", "last_name", "username")
+            student_queryset.order_by("first_name", "last_name", "username")
         )
-        records = Attendance.objects.select_related("student").order_by("date")
+        records = records_queryset.select_related("student").order_by("date")
         dates = list(records.values_list("date", flat=True).distinct())
         status_codes = {"PRESENT": "P", "ABSENT": "A", "LATE": "L"}
         attendance_by_student_and_date = {

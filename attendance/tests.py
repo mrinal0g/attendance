@@ -6,6 +6,7 @@ from django.test import TestCase
 from django.utils import timezone
 
 from .models import Attendance
+from student.models import StudentModel
 
 
 class MarkAttendanceTests(TestCase):
@@ -53,3 +54,43 @@ class MarkAttendanceTests(TestCase):
         rows = list(csv.reader(response.content.decode().splitlines()))
         self.assertEqual(rows[0][:3], ["S No", "Learner Name", timezone.localdate().isoformat()])
         self.assertEqual(rows[1][:3], ["1", "Asha Sharma", "P"])
+
+    def test_admin_csv_export_can_filter_by_batch_id(self):
+        other_user = get_user_model().objects.create_user(
+            username="student2",
+            first_name="Bina",
+            last_name="Patel",
+            password="safe-password",
+        )
+        StudentModel.objects.create(
+            id=self.user.id,
+            full_name="Asha Sharma",
+            email="asha@example.com",
+            batch_id="batch-a",
+        )
+        StudentModel.objects.create(
+            id=other_user.id,
+            full_name="Bina Patel",
+            email="bina@example.com",
+            batch_id="batch-b",
+        )
+        first_date = timezone.localdate()
+        second_date = first_date + timezone.timedelta(days=1)
+        Attendance.objects.create(
+            student=self.user, date=first_date, status="PRESENT"
+        )
+        Attendance.objects.create(
+            student=other_user, date=second_date, status="ABSENT"
+        )
+        admin_user = get_user_model().objects.create_superuser(
+            username="admin", email="admin@example.com", password="safe-password"
+        )
+        self.client.force_login(admin_user)
+
+        response = self.client.get(
+            "/admin/attendance/attendance/export-csv/?batch_id=batch-a"
+        )
+
+        rows = list(csv.reader(response.content.decode().splitlines()))
+        self.assertEqual(rows[0], ["S No", "Learner Name", first_date.isoformat()])
+        self.assertEqual(rows[1], ["1", "Asha Sharma", "P"])

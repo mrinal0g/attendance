@@ -4,5 +4,12 @@
   <li>
     <a href="{% url 'admin:attendance_attendance_export' %}">Export attendance CSV</a>
   </li>
+  <li>
+    <form method="get" action="{% url 'admin:attendance_attendance_export' %}">
+      <label for="batch-id">Batch ID</label>
+      <input id="batch-id" name="batch_id" type="text" maxlength="30">
+      <button type="submit">Export batch CSV</button>
+    </form>
+  </li>
   {{ block.super }}
 {% endblock %}
