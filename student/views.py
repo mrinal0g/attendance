@@ -96,7 +96,7 @@ class RegisterPage(View):
 #                 "student_search.html",
 #                 {"error": "No registered student was found with that username.", "username": username},
 #             )
-        return redirect("attendance:student-attendance", username=student.username)
+        # return redirect("attendance:student-attendance", username=student.username)
 
 class Sanity(APIView):
     def get(self,req):
